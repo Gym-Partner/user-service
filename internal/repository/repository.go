@@ -10,12 +10,23 @@ import (
 	"strings"
 )
 
+// Repository provides access to the user data stored in the database.
 type Repository struct {
 	DB  *gorm.DB
 	Log *logger.Logger
 }
 
-func (r Repository) IsExist(data, OPT string) bool {
+// New creates and returns a new Repository instance
+// using the provided GORM database handler and logger
+func New(db *gorm.DB, logg *logger.Logger) *Repository {
+	return &Repository{
+		DB:  db,
+		Log: logg,
+	}
+}
+
+// IsExist implements IRepository.IsExist
+func (r *Repository) IsExist(data, OPT string) bool {
 	var user domain.User
 	var queryColumn string
 
@@ -41,7 +52,8 @@ func (r Repository) IsExist(data, OPT string) bool {
 	}
 }
 
-func (r Repository) Create(data domain.User) (domain.User, *serviceError.Error) {
+// Create implements IRepository.Create
+func (r *Repository) Create(data domain.User) (domain.User, *serviceError.Error) {
 	if raw := r.DB.
 		Create(&data); raw.Error != nil {
 		r.Log.Error(raw.Error.Error())

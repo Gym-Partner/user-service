@@ -10,12 +10,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Service handles user-related business logic
 type Service struct {
 	IRepository repository.IRepository
 	Utils       *utils.Utils[domain.User]
 }
 
-func (s Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
+// New creates and return a new Service instance with its dependencies
+func New(repo repository.IRepository, tools *utils.Utils[domain.User]) *Service {
+	return &Service{
+		IRepository: repo,
+		Utils:       tools,
+	}
+}
+
+// Create implements IService.Create
+func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 	userPtr, err := s.Utils.InjectBodyInModel(ctx)
 	if err != nil {
 		return domain.User{}, err
@@ -28,6 +38,7 @@ func (s Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 			fmt.Sprintf(constants.ServiceErrAppINTUserAlreadyExist, userPtr.Email))
 	}
 
+	userPtr.GenerateId()
 	user, err := s.IRepository.Create(*userPtr)
 	if err != nil {
 		return domain.User{}, err

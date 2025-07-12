@@ -15,15 +15,10 @@ type Controller struct {
 }
 
 func New(db *database.Database) *Controller {
-	return &Controller{
-		IService: service.Service{
-			IRepository: repository.Repository{
-				DB:  db.Handler,
-				Log: db.Logger,
-			},
-			Utils: utils.NewUtils[domain.User](),
-		},
-	}
+	repo := repository.New(db.Handler, db.Logger)
+	svc := service.New(repo, utils.NewUtils[domain.User]())
+
+	return &Controller{IService: svc}
 }
 
 func (c *Controller) Create(ctx *gin.Context) {

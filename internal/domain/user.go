@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+)
 
 type User struct {
 	ID       string `json:"id"`
@@ -10,14 +13,17 @@ type User struct {
 }
 type Users []User
 
-func (u User) Response() gin.H {
+func (u *User) Response() gin.H {
 	return gin.H{
 		"data": gin.H{
 			"username": u.Username,
 			"email":    u.Email,
-			"password": u.Password,
 		},
 	}
+}
+
+func (u *User) GenerateId() {
+	u.ID = uuid.New().String()
 }
 
 type MigrateUser struct {
