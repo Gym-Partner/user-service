@@ -1,10 +1,13 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/Gym-Partner/api_common/logger"
 	"github.com/Gym-Partner/api_common/serviceError"
+	"github.com/Gym-Partner/user-service/internal/constants"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type Repository struct {
@@ -13,11 +16,39 @@ type Repository struct {
 }
 
 func (r Repository) IsExist(data, OPT string) bool {
-	//TODO implement me
-	panic("implement me")
+	var user domain.User
+	var queryColumn string
+
+	switch strings.ToLower(OPT) {
+	case "ID":
+		queryColumn = "id"
+	case "EMAIL":
+		queryColumn = "email"
+	}
+
+	if raw := r.DB.
+		Where(queryColumn+" = ?", data).
+		Find(&user); raw.Error != nil {
+		r.Log.Error(raw.Error.Error())
+		return false
+	}
+
+	if user.ID == "" {
+		r.Log.Error(constants.ServiceErrDBUserNotFound)
+		return false
+	} else {
+		return true
+	}
 }
 
 func (r Repository) Create(data domain.User) (domain.User, *serviceError.Error) {
-	//TODO implement me
-	panic("implement me")
+	if raw := r.DB.
+		Create(&data); raw.Error != nil {
+		r.Log.Error(raw.Error.Error())
+		return domain.User{}, serviceError.New(
+			serviceError.HttpCode500,
+			fmt.Sprintf(constants.ServiceErrAppDBCreateUser, data.Email),
+			serviceError.WithOriginal(raw.Error))
+	}
+	return data, nil
 }
