@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Gym-Partner/api_common/database"
+	"github.com/Gym-Partner/api_common/serviceError"
 	"github.com/Gym-Partner/api_common/utils"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"github.com/Gym-Partner/user-service/internal/repository"
@@ -26,4 +27,11 @@ func New(db *database.Database) *Controller {
 }
 
 func (c *Controller) Create(ctx *gin.Context) {
+	user, err := c.IService.Create(ctx)
+	if err != nil {
+		ctx.JSON(err.Code, err.Response())
+		return
+	}
+
+	ctx.JSON(serviceError.HttpCode201.ToInt(), user.Response())
 }
