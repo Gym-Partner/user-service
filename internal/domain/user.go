@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/Gym-Partner/api_common/serviceError"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -24,6 +25,15 @@ func (u *User) Response() gin.H {
 
 func (u *User) GenerateId() {
 	u.ID = uuid.New().String()
+}
+
+func (u *User) HashPassword(hashFunc func(string) (string, *serviceError.Error)) *serviceError.Error {
+	hashed, err := hashFunc(u.Password)
+	if err != nil {
+		return err
+	}
+	u.Password = hashed
+	return nil
 }
 
 type MigrateUser struct {

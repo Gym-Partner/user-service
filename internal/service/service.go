@@ -17,10 +17,10 @@ type Service struct {
 }
 
 // New creates and return a new Service instance with its dependencies
-func New(repo repository.IRepository, tools *utils.Utils[domain.User]) *Service {
+func New(repo repository.IRepository, util *utils.Utils[domain.User]) *Service {
 	return &Service{
 		IRepository: repo,
-		Utils:       tools,
+		Utils:       util,
 	}
 }
 
@@ -39,6 +39,10 @@ func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 	}
 
 	userPtr.GenerateId()
+	if err = userPtr.HashPassword(s.Utils.HashPassword); err != nil {
+		return domain.User{}, err
+	}
+
 	user, err := s.IRepository.Create(*userPtr)
 	if err != nil {
 		return domain.User{}, err
