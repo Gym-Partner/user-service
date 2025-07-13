@@ -30,7 +30,7 @@ func (r *Repository) IsExist(data, OPT string) bool {
 	var user domain.User
 	var queryColumn string
 
-	switch strings.ToLower(OPT) {
+	switch strings.ToUpper(OPT) {
 	case "ID":
 		queryColumn = "id"
 	case "EMAIL":
@@ -39,7 +39,7 @@ func (r *Repository) IsExist(data, OPT string) bool {
 
 	if raw := r.DB.
 		Where(queryColumn+" = ?", data).
-		Find(&user); raw.Error != nil {
+		First(&user); raw.Error != nil {
 		r.Log.Error(raw.Error.Error())
 		return false
 	}
@@ -56,11 +56,28 @@ func (r *Repository) IsExist(data, OPT string) bool {
 func (r *Repository) Create(data domain.User) (domain.User, *serviceError.Error) {
 	if raw := r.DB.
 		Create(&data); raw.Error != nil {
-		r.Log.Error(raw.Error.Error())
+		r.Log.Error(constants.ServiceErrDBCreateUser, raw.Error.Error())
+
 		return domain.User{}, serviceError.New(
 			serviceError.HttpCode500,
 			fmt.Sprintf(constants.ServiceErrAppDBCreateUser, data.Email),
 			serviceError.WithOriginal(raw.Error))
 	}
 	return data, nil
+}
+
+// GetAll implements IRepository.GetAll
+func (r *Repository) GetAll() (domain.Users, *serviceError.Error) {
+	var users domain.Users
+
+	if raw := r.DB.
+		First(&users); raw.Error != nil {
+		r.Log.Error(constants.ServiceErrDBGetAllUsers, raw.Error.Error())
+
+		return domain.Users{}, serviceError.New(
+			serviceError.HttpCode500,
+			fmt.Sprintf(constants.ServiceErrAppDBGetAllUsers),
+			serviceError.WithOriginal(raw.Error))
+	}
+	return users, nil
 }

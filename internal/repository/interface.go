@@ -15,6 +15,10 @@ type IRepository interface {
 	IsExist(data, OPT string) bool
 
 	// Create inserts a new user record into the database.
-	// Returns the created user and nil on success, or an empty user and a service error on failure.
+	// Returns the created user and nil on success, or an empty user and a repository error on failure.
 	Create(data domain.User) (domain.User, *serviceError.Error)
+
+	// GetAll retrieves all users in the database.
+	// Return all retrieved users en nil on success, or empty users and a repository error on failure.
+	GetAll() (domain.Users, *serviceError.Error)
 }

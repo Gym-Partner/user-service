@@ -10,8 +10,13 @@ import (
 func RegisterRoutes(router *gin.Engine, deps *router.Dependencies) {
 	newController := controller.New(deps.Database)
 
-	v1 := router.Group(viper.GetString("API_PREFIX"))
+	v1Auth := router.Group(viper.GetString("API_PREFIX"))
 	{
-		v1.POST("/user/create", newController.Create)
+		v1Auth.GET("/user/get_all", newController.GetAll)
+	}
+
+	v1NoAuth := router.Group(viper.GetString("API_PREFIX"))
+	{
+		v1NoAuth.POST("/user/create", newController.Create)
 	}
 }

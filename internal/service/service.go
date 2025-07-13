@@ -50,3 +50,9 @@ func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 
 	return user, nil
 }
+
+// GetAll implements IService.GetAll
+func (s *Service) GetAll() (users domain.Users, err *serviceError.Error) {
+	users, err = s.IRepository.GetAll()
+	return
+}
