@@ -57,8 +57,24 @@ func (s *Service) GetAll() (users domain.Users, err *serviceError.Error) {
 	return
 }
 
-// GetOne implements IService.GetOne
-func (s *Service) GetOne(ctx *gin.Context) (user domain.User, err *serviceError.Error) {
-	//TODO implement me
-	panic("implement me")
+// GetOneByID implements IService.GetOneByID
+func (s *Service) GetOneByID(ctx *gin.Context) (user domain.User, err *serviceError.Error) {
+	uid, _ := ctx.Get("uid")
+
+	user, err = s.IRepository.GetOneByID(uid.(string))
+	return
+}
+
+// GetOneByEmail implements IService.GetOneByEmail
+func (s *Service) GetOneByEmail(ctx *gin.Context) (domain.User, *serviceError.Error) {
+	data, err := s.Utils.InjectBodyInModel(ctx)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	user, err := s.IRepository.GetOneByEmail(data.Email)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
 }

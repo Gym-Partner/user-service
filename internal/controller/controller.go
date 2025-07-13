@@ -44,8 +44,18 @@ func (c *Controller) GetAll(ctx *gin.Context) {
 	ctx.JSON(serviceError.HttpCode200.ToInt(), users)
 }
 
-func (c *Controller) GetOne(ctx *gin.Context) {
-	user, err := c.IService.GetOne(ctx)
+func (c *Controller) GetOneByID(ctx *gin.Context) {
+	user, err := c.IService.GetOneByID(ctx)
+	if err != nil {
+		ctx.JSON(err.Code, err.Response())
+		return
+	}
+
+	ctx.JSON(serviceError.HttpCode200.ToInt(), user)
+}
+
+func (c *Controller) GetOneByEmail(ctx *gin.Context) {
+	user, err := c.IService.GetOneByEmail(ctx)
 	if err != nil {
 		ctx.JSON(err.Code, err.Response())
 		return

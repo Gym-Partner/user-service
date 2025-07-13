@@ -13,8 +13,9 @@ func RegisterRoutes(router *gin.Engine, deps *router.Dependencies) {
 
 	v1Auth := router.Group(viper.GetString("API_PREFIX"), middlewares.Auth())
 	{
-		v1Auth.GET("/user/get_all", newController.GetAll)
-		v1Auth.GET("/user/get_one", newController.GetOne)
+		v1Auth.GET("/user/get/all", newController.GetAll)
+		v1Auth.GET("/user/get/one/id", newController.GetOneByID)
+		v1Auth.GET("/user/get/one/email", newController.GetOneByEmail)
 	}
 
 	v1NoAuth := router.Group(viper.GetString("API_PREFIX"))

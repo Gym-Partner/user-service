@@ -15,10 +15,14 @@ type IService interface {
 	Create(ctx *gin.Context) (domain.User, *serviceError.Error)
 
 	// GetAll manages the retrieval of all users from the database.
-	// Returns all users and nil on success, or empty users and a service error on failure.
+	// Returns all users and nil on success, or an empty users and a service error on failure.
 	GetAll() (users domain.Users, err *serviceError.Error)
 
-	// GetOne manages the retrieval of one user from the database with his email.
-	// Return the user and nil on success, or empty user and a service error on failure.
-	GetOne(ctx *gin.Context) (user domain.User, err *serviceError.Error)
+	// GetOneByID manages the retrieval of one user from the database with his ID in user's token.
+	// Return the user and nil on success, or an empty user and a service error on failure.
+	GetOneByID(ctx *gin.Context) (user domain.User, err *serviceError.Error)
+
+	// GetOneByEmail manages the retrieval of on user from the database with his email.
+	// Return the user and nil on success, or an empty user and a service error on failure.
+	GetOneByEmail(ctx *gin.Context) (domain.User, *serviceError.Error)
 }
