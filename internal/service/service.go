@@ -56,3 +56,8 @@ func (s *Service) GetAll() (users domain.Users, err *serviceError.Error) {
 	users, err = s.IRepository.GetAll()
 	return
 }
+
+func (s *Service) GetOne(ctx *gin.Context) (user domain.User, err *serviceError.Error) {
+	//TODO implement me
+	panic("implement me")
+}

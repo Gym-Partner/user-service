@@ -49,3 +49,16 @@ func (c *Controller) GetAll(ctx *gin.Context) {
 	}
 	ctx.JSON(serviceError.HttpCode200.ToInt(), users)
 }
+
+// GetOne handles the HTTP GET request to retrieve user by his email in token.
+// It calls the services layer to fetch the user and returns it
+// as a JSON response with the appropriate HTTP status code.
+func (c *Controller) GetOne(ctx *gin.Context) {
+	user, err := c.IService.GetOne(ctx)
+	if err != nil {
+		ctx.JSON(err.Code, err.Response())
+		return
+	}
+
+	ctx.JSON(serviceError.HttpCode200.ToInt(), user)
+}
