@@ -81,3 +81,9 @@ func (r *Repository) GetAll() (domain.Users, *serviceError.Error) {
 	}
 	return users, nil
 }
+
+// GetOneByEmail implements IRepository.GetOneByEmail
+func (r *Repository) GetOneByEmail(email string) (domain.User, *serviceError.Error) {
+	//TODO implement me
+	panic("implement me")
+}
