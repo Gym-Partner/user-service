@@ -76,7 +76,7 @@ func (r *Repository) GetAll() (domain.Users, *serviceError.Error) {
 
 		return domain.Users{}, serviceError.New(
 			serviceError.HttpCode500,
-			fmt.Sprintf(constants.ServiceErrAppDBGetAllUsers),
+			constants.ServiceErrAppDBGetAllUsers,
 			serviceError.WithOriginal(raw.Error))
 	}
 	return users, nil
@@ -84,12 +84,34 @@ func (r *Repository) GetAll() (domain.Users, *serviceError.Error) {
 
 // GetOneByID implements IRepository.GetOneByID
 func (r *Repository) GetOneByID(uid string) (domain.User, *serviceError.Error) {
-	//TODO implement me
-	panic("implement me")
+	var user domain.User
+
+	if raw := r.DB.
+		Where("id = ?", uid).
+		First(&user); raw.Error != nil {
+		r.Log.Error(constants.ServiceErrDBGetOneUserByID, raw.Error.Error())
+
+		return domain.User{}, serviceError.New(
+			serviceError.HttpCode500,
+			constants.ServiceErrAppDBGetOneUserByID,
+			serviceError.WithOriginal(raw.Error))
+	}
+	return user, nil
 }
 
 // GetOneByEmail implements IRepository.GetOneByEmail
 func (r *Repository) GetOneByEmail(email string) (domain.User, *serviceError.Error) {
-	//TODO implement me
-	panic("implement me")
+	var user domain.User
+
+	if raw := r.DB.
+		Where("email = ?", email).
+		First(&user); raw.Error != nil {
+		r.Log.Error(constants.ServiceErrDBGetOneUserByEmail, raw.Error.Error())
+
+		return domain.User{}, serviceError.New(
+			serviceError.HttpCode500,
+			constants.ServiceErrAppDBGetOneUserByEmail,
+			serviceError.WithOriginal(raw.Error))
+	}
+	return user, nil
 }
