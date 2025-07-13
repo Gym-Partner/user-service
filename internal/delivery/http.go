@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"github.com/Gym-Partner/api_common/middlewares"
 	"github.com/Gym-Partner/api_common/router"
 	"github.com/Gym-Partner/user-service/internal/controller"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 func RegisterRoutes(router *gin.Engine, deps *router.Dependencies) {
 	newController := controller.New(deps.Database)
 
-	v1Auth := router.Group(viper.GetString("API_PREFIX"))
+	v1Auth := router.Group(viper.GetString("API_PREFIX"), middlewares.Auth())
 	{
 		v1Auth.GET("/user/get_all", newController.GetAll)
 		v1Auth.GET("/user/get_one", newController.GetOne)
