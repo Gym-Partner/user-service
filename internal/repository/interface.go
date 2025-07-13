@@ -19,10 +19,14 @@ type IRepository interface {
 	Create(data domain.User) (domain.User, *serviceError.Error)
 
 	// GetAll retrieves all users in the database.
-	// Returns all retrieved users en nil on success, or empty users and a repository error on failure.
+	// Returns all retrieved users and nil on success, or an empty users and a repository error on failure.
 	GetAll() (domain.Users, *serviceError.Error)
 
-	// GetOneByEmail retrieve one user int the database using its email.
-	// Return retrieve user en nil on success, or empty user and a repository error on failure.
+	// GetOneByID retrieve one user in the database using his ID.
+	// Return retrieve user and nil on success, or an empty user and a repository error on failure.
+	GetOneByID(uid string) (domain.User, *serviceError.Error)
+
+	// GetOneByEmail retrieve one user in the database using his email.
+	// Return retrieve user and nil on success, or an empty user and a repository error on failure.
 	GetOneByEmail(email string) (domain.User, *serviceError.Error)
 }
