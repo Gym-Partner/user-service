@@ -57,6 +57,7 @@ func (s *Service) GetAll() (users domain.Users, err *serviceError.Error) {
 	return
 }
 
+// GetOne implements IService.GetOne
 func (s *Service) GetOne(ctx *gin.Context) (user domain.User, err *serviceError.Error) {
 	//TODO implement me
 	panic("implement me")

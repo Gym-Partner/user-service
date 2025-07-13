@@ -25,9 +25,6 @@ func New(db *database.Database) *Controller {
 	return &Controller{IService: svc}
 }
 
-// Create handles the HTTP POST request to create a new user.
-// It delegates the creation to the service layer and returns the result
-// as a JSON response with the appropriate HTTP status code.
 func (c *Controller) Create(ctx *gin.Context) {
 	user, err := c.IService.Create(ctx)
 	if err != nil {
@@ -38,9 +35,6 @@ func (c *Controller) Create(ctx *gin.Context) {
 	ctx.JSON(serviceError.HttpCode201.ToInt(), user.Response())
 }
 
-// GetAll handles the HTTP GET request to retrieve all users.
-// It calls the services layer to fetch the user list and returns it
-// as a JSON response with the appropriate HTTP status code.
 func (c *Controller) GetAll(ctx *gin.Context) {
 	users, err := c.IService.GetAll()
 	if err != nil {
@@ -50,9 +44,6 @@ func (c *Controller) GetAll(ctx *gin.Context) {
 	ctx.JSON(serviceError.HttpCode200.ToInt(), users)
 }
 
-// GetOne handles the HTTP GET request to retrieve user by his email in token.
-// It calls the services layer to fetch the user and returns it
-// as a JSON response with the appropriate HTTP status code.
 func (c *Controller) GetOne(ctx *gin.Context) {
 	user, err := c.IService.GetOne(ctx)
 	if err != nil {
