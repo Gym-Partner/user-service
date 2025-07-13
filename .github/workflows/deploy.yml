@@ -1,0 +1,27 @@
+name: CI/CD Pipelines
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  ECR_URI: public.ecr.aws/h4z0a5x7/gym-partner/gym-partner-api
+  ECR_IMAGE: gym-partner/services/user
+  TAG: v1.0.0
+
+jobs:
+  unit_test:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+      - name: Run Unit Tests with Makefile
+        run: make unit-test
