@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/Gym-Partner/api_common/serviceError"
+	"github.com/Gym-Partner/api-common/serviceError"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"time"

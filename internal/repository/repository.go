@@ -2,8 +2,8 @@ package repository
 
 import (
 	"fmt"
-	"github.com/Gym-Partner/api_common/logger"
-	"github.com/Gym-Partner/api_common/serviceError"
+	"github.com/Gym-Partner/api-common/logger"
+	"github.com/Gym-Partner/api-common/serviceError"
 	"github.com/Gym-Partner/user-service/internal/constants"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"gorm.io/gorm"

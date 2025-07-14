@@ -3,7 +3,6 @@ module github.com/Gym-Partner/user-service
 go 1.24.4
 
 require (
-	github.com/Gym-Partner/api_common v1.2.1
 	github.com/gin-gonic/gin v1.10.1
 	github.com/google/uuid v1.6.0
 	github.com/spf13/viper v1.20.1
@@ -11,6 +10,7 @@ require (
 )
 
 require (
+	github.com/Gym-Partner/api-common v1.2.2 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.13.3 // indirect

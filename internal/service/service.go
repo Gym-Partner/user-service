@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/Gym-Partner/api_common/serviceError"
-	"github.com/Gym-Partner/api_common/utils"
+	"github.com/Gym-Partner/api-common/serviceError"
+	"github.com/Gym-Partner/api-common/utils"
 	"github.com/Gym-Partner/user-service/internal/constants"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"github.com/Gym-Partner/user-service/internal/repository"

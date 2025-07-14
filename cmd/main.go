@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Gym-Partner/api_common/config"
-	"github.com/Gym-Partner/api_common/router"
+	"github.com/Gym-Partner/api-common/config"
+	"github.com/Gym-Partner/api-common/router"
 	"github.com/Gym-Partner/user-service/internal/delivery"
 	"github.com/Gym-Partner/user-service/internal/domain"
 )
