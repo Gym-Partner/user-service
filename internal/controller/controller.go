@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Gym-Partner/api-common/database"
+	"github.com/Gym-Partner/api-common/rabbitmq"
 	"github.com/Gym-Partner/api-common/serviceError"
 	"github.com/Gym-Partner/api-common/utils"
 	"github.com/Gym-Partner/user-service/internal/domain"
@@ -18,9 +19,9 @@ type Controller struct {
 
 // New creates a new instance of Controller by writing up to repository, service,
 // utility and rabbitMQ components using the given database connection.
-func New(db *database.Database) *Controller {
+func New(db *database.Database, rabbit *rabbitmq.RabbitMQ) *Controller {
 	repo := repository.New(db.Handler, db.Logger)
-	svc := service.New(repo, utils.NewUtils[domain.User]())
+	svc := service.New(repo, rabbit, utils.NewUtils[domain.User]())
 
 	return &Controller{IService: svc}
 }

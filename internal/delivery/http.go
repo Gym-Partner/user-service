@@ -9,7 +9,7 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine, deps *router.Dependencies) {
-	newController := controller.New(deps.Database)
+	newController := controller.New(deps.Database, deps.Rabbit)
 
 	v1Auth := router.Group(viper.GetString("API_PREFIX"), middlewares.Auth())
 	{

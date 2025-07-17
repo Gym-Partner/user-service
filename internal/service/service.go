@@ -2,24 +2,28 @@ package service
 
 import (
 	"fmt"
+	"github.com/Gym-Partner/api-common/rabbitmq"
 	"github.com/Gym-Partner/api-common/serviceError"
 	"github.com/Gym-Partner/api-common/utils"
 	"github.com/Gym-Partner/user-service/internal/constants"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"github.com/Gym-Partner/user-service/internal/repository"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 // Service handles user-related business logic
 type Service struct {
 	IRepository repository.IRepository
+	Rabbit      *rabbitmq.RabbitMQ
 	Utils       *utils.Utils[domain.User]
 }
 
 // New creates and return a new Service instance with its dependencies
-func New(repo repository.IRepository, util *utils.Utils[domain.User]) *Service {
+func New(repo repository.IRepository, rabbit *rabbitmq.RabbitMQ, util *utils.Utils[domain.User]) *Service {
 	return &Service{
 		IRepository: repo,
+		Rabbit:      rabbit,
 		Utils:       util,
 	}
 }
@@ -45,6 +49,14 @@ func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 
 	user, err := s.IRepository.Create(*userPtr)
 	if err != nil {
+		return domain.User{}, err
+	}
+
+	// RabbitMQ Part
+	if err = s.Rabbit.PublishEvent(rabbitmq.EventUserCreated, viper.GetString("SERVICE_NAME"), domain.User{
+		ID:    user.ID,
+		Email: user.Email,
+	}); err != nil {
 		return domain.User{}, err
 	}
 

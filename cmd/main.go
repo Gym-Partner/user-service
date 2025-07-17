@@ -11,6 +11,7 @@ func main() {
 	// Initialize service config with options
 	conf := config.InitConfig(config.Options{
 		EnableDatabase: true,
+		EnableRabbitMQ: true,
 		Migrations:     []any{domain.MigrateUser{}},
 		IsTest:         false,
 	})
@@ -19,9 +20,11 @@ func main() {
 	r := router.InitRouter(router.Options{
 		Deps: &router.Dependencies{
 			Database: conf.Database,
+			Rabbit:   conf.RabbitMQ,
 		},
 		RegisterRoutes: delivery.RegisterRoutes,
 	})
 
+	// Run the service
 	conf.Run(r)
 }
