@@ -1,11 +1,10 @@
 package service
 
 import (
-	"fmt"
+	"github.com/Gym-Partner/api-common/errs"
 	"github.com/Gym-Partner/api-common/rabbitmq"
-	"github.com/Gym-Partner/api-common/serviceError"
+	"github.com/Gym-Partner/api-common/status"
 	"github.com/Gym-Partner/api-common/utils"
-	"github.com/Gym-Partner/user-service/internal/constants"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"github.com/Gym-Partner/user-service/internal/repository"
 	"github.com/gin-gonic/gin"
@@ -16,20 +15,22 @@ import (
 type Service struct {
 	IRepository repository.IRepository
 	Rabbit      *rabbitmq.RabbitMQ
+	Catalog     *status.StatusCatalog
 	Utils       *utils.Utils[domain.User]
 }
 
 // New creates and return a new Service instance with its dependencies
-func New(repo repository.IRepository, rabbit *rabbitmq.RabbitMQ, util *utils.Utils[domain.User]) *Service {
+func New(repo repository.IRepository, rabbit *rabbitmq.RabbitMQ, catalog *status.StatusCatalog, util *utils.Utils[domain.User]) *Service {
 	return &Service{
 		IRepository: repo,
 		Rabbit:      rabbit,
+		Catalog:     catalog,
 		Utils:       util,
 	}
 }
 
 // Create implements IService.Create
-func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
+func (s *Service) Create(ctx *gin.Context) (domain.User, *errs.Error) {
 	userPtr, err := s.Utils.InjectBodyInModel(ctx)
 	if err != nil {
 		return domain.User{}, err
@@ -37,9 +38,7 @@ func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 
 	exist := s.IRepository.IsExist(userPtr.Email, "email")
 	if exist {
-		return domain.User{}, serviceError.New(
-			serviceError.HttpCode400,
-			fmt.Sprintf(constants.ServiceErrAppINTUserAlreadyExist, userPtr.Email))
+		return domain.User{}, errs.New(s.Catalog, "", nil)
 	}
 
 	userPtr.GenerateId()
@@ -64,13 +63,13 @@ func (s *Service) Create(ctx *gin.Context) (domain.User, *serviceError.Error) {
 }
 
 // GetAll implements IService.GetAll
-func (s *Service) GetAll() (users domain.Users, err *serviceError.Error) {
+func (s *Service) GetAll() (users domain.Users, err *errs.Error) {
 	users, err = s.IRepository.GetAll()
 	return
 }
 
 // GetOneByID implements IService.GetOneByID
-func (s *Service) GetOneByID(ctx *gin.Context) (user domain.User, err *serviceError.Error) {
+func (s *Service) GetOneByID(ctx *gin.Context) (user domain.User, err *errs.Error) {
 	uid, _ := ctx.Get("uid")
 
 	user, err = s.IRepository.GetOneByID(uid.(string))
@@ -78,7 +77,7 @@ func (s *Service) GetOneByID(ctx *gin.Context) (user domain.User, err *serviceEr
 }
 
 // GetOneByEmail implements IService.GetOneByEmail
-func (s *Service) GetOneByEmail(ctx *gin.Context) (domain.User, *serviceError.Error) {
+func (s *Service) GetOneByEmail(ctx *gin.Context) (domain.User, *errs.Error) {
 	data, err := s.Utils.InjectBodyInModel(ctx)
 	if err != nil {
 		return domain.User{}, err

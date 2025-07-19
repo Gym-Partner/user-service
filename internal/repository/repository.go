@@ -1,10 +1,8 @@
 package repository
 
 import (
-	"fmt"
-	"github.com/Gym-Partner/api-common/logger"
-	"github.com/Gym-Partner/api-common/serviceError"
-	"github.com/Gym-Partner/user-service/internal/constants"
+	"github.com/Gym-Partner/api-common/errs"
+	"github.com/Gym-Partner/api-common/status"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"gorm.io/gorm"
 	"strings"
@@ -12,16 +10,16 @@ import (
 
 // Repository provides access to the user data stored in the database.
 type Repository struct {
-	DB  *gorm.DB
-	Log *logger.Logger
+	DB      *gorm.DB
+	Catalog *status.StatusCatalog
 }
 
 // New creates and returns a new Repository instance
 // using the provided GORM database handler and logger
-func New(db *gorm.DB, logg *logger.Logger) *Repository {
+func New(db *gorm.DB, catalog *status.StatusCatalog) *Repository {
 	return &Repository{
-		DB:  db,
-		Log: logg,
+		DB:      db,
+		Catalog: catalog,
 	}
 }
 
@@ -40,12 +38,12 @@ func (r *Repository) IsExist(data, OPT string) bool {
 	if raw := r.DB.
 		Where(queryColumn+" = ?", data).
 		First(&user); raw.Error != nil {
-		r.Log.Error(raw.Error.Error())
+		r.Catalog.Log("", raw.Error.Error())
 		return false
 	}
 
 	if user.ID == "" {
-		r.Log.Error(constants.ServiceErrDBUserNotFound)
+		r.Catalog.Log("")
 		return false
 	} else {
 		return true
@@ -53,65 +51,49 @@ func (r *Repository) IsExist(data, OPT string) bool {
 }
 
 // Create implements IRepository.Create
-func (r *Repository) Create(data domain.User) (domain.User, *serviceError.Error) {
+func (r *Repository) Create(data domain.User) (domain.User, *errs.Error) {
 	if raw := r.DB.
 		Create(&data); raw.Error != nil {
-		r.Log.Error(constants.ServiceErrDBCreateUser, raw.Error.Error())
-
-		return domain.User{}, serviceError.New(
-			serviceError.HttpCode500,
-			fmt.Sprintf(constants.ServiceErrAppDBCreateUser, data.Email),
-			serviceError.WithOriginal(raw.Error))
+		r.Catalog.Log("", raw.Error.Error())
+		return domain.User{}, errs.New(r.Catalog, "", nil, raw.Error.Error())
 	}
 	return data, nil
 }
 
 // GetAll implements IRepository.GetAll
-func (r *Repository) GetAll() (domain.Users, *serviceError.Error) {
+func (r *Repository) GetAll() (domain.Users, *errs.Error) {
 	var users domain.Users
 
 	if raw := r.DB.
 		First(&users); raw.Error != nil {
-		r.Log.Error(constants.ServiceErrDBGetAllUsers, raw.Error.Error())
-
-		return domain.Users{}, serviceError.New(
-			serviceError.HttpCode500,
-			constants.ServiceErrAppDBGetAllUsers,
-			serviceError.WithOriginal(raw.Error))
+		r.Catalog.Log("", raw.Error.Error())
+		return domain.Users{}, errs.New(r.Catalog, "", nil, raw.Error.Error())
 	}
 	return users, nil
 }
 
 // GetOneByID implements IRepository.GetOneByID
-func (r *Repository) GetOneByID(uid string) (domain.User, *serviceError.Error) {
+func (r *Repository) GetOneByID(uid string) (domain.User, *errs.Error) {
 	var user domain.User
 
 	if raw := r.DB.
 		Where("id = ?", uid).
 		First(&user); raw.Error != nil {
-		r.Log.Error(constants.ServiceErrDBGetOneUserByID, raw.Error.Error())
-
-		return domain.User{}, serviceError.New(
-			serviceError.HttpCode500,
-			constants.ServiceErrAppDBGetOneUserByID,
-			serviceError.WithOriginal(raw.Error))
+		r.Catalog.Log("", raw.Error.Error())
+		return domain.User{}, errs.New(r.Catalog, "", nil, raw.Error.Error())
 	}
 	return user, nil
 }
 
 // GetOneByEmail implements IRepository.GetOneByEmail
-func (r *Repository) GetOneByEmail(email string) (domain.User, *serviceError.Error) {
+func (r *Repository) GetOneByEmail(email string) (domain.User, *errs.Error) {
 	var user domain.User
 
 	if raw := r.DB.
 		Where("email = ?", email).
 		First(&user); raw.Error != nil {
-		r.Log.Error(constants.ServiceErrDBGetOneUserByEmail, raw.Error.Error())
-
-		return domain.User{}, serviceError.New(
-			serviceError.HttpCode500,
-			constants.ServiceErrAppDBGetOneUserByEmail,
-			serviceError.WithOriginal(raw.Error))
+		r.Catalog.Log("", raw.Error.Error())
+		return domain.User{}, errs.New(r.Catalog, "", nil, raw.Error.Error())
 	}
 	return user, nil
 }

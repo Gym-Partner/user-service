@@ -9,6 +9,8 @@ require (
 	gorm.io/gorm v1.30.0
 )
 
+replace github.com/Gym-Partner/api-common v1.4.2 => ../api-common
+
 require (
 	github.com/Gym-Partner/api-common v1.4.2 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect

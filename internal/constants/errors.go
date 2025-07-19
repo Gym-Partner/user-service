@@ -1,5 +1,7 @@
 package constants
 
+import "github.com/Gym-Partner/api-common/status"
+
 // ######################################################################################
 // 											LOG
 // ######################################################################################
@@ -31,3 +33,17 @@ const (
 
 	ServiceErrAppINTUserAlreadyExist = "User {%s} already exists."
 )
+
+type Constants struct {
+	Catalog *status.StatusCatalog
+}
+
+func New(catalog *status.StatusCatalog) *Constants {
+	return &Constants{Catalog: catalog}
+}
+
+func (c *Constants) LoadAppConstant() {
+
+}
+
+func (c *Constants) LoadLogConstant() {}

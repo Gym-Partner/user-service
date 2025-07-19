@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/Gym-Partner/api-common/serviceError"
+	"github.com/Gym-Partner/api-common/errs"
 	"github.com/Gym-Partner/user-service/internal/domain"
 )
 
@@ -16,17 +16,17 @@ type IRepository interface {
 
 	// Create inserts a new user record into the database.
 	// Returns the created user and nil on success, or an empty user and a repository error on failure.
-	Create(data domain.User) (domain.User, *serviceError.Error)
+	Create(data domain.User) (domain.User, *errs.Error)
 
 	// GetAll retrieves all users in the database.
 	// Returns all retrieved users and nil on success, or an empty users and a repository error on failure.
-	GetAll() (domain.Users, *serviceError.Error)
+	GetAll() (domain.Users, *errs.Error)
 
 	// GetOneByID retrieve one user in the database using his ID.
 	// Return retrieve user and nil on success, or an empty user and a repository error on failure.
-	GetOneByID(uid string) (domain.User, *serviceError.Error)
+	GetOneByID(uid string) (domain.User, *errs.Error)
 
 	// GetOneByEmail retrieve one user in the database using his email.
 	// Return retrieve user and nil on success, or an empty user and a repository error on failure.
-	GetOneByEmail(email string) (domain.User, *serviceError.Error)
+	GetOneByEmail(email string) (domain.User, *errs.Error)
 }

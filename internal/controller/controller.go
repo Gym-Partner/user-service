@@ -3,12 +3,13 @@ package controller
 import (
 	"github.com/Gym-Partner/api-common/database"
 	"github.com/Gym-Partner/api-common/rabbitmq"
-	"github.com/Gym-Partner/api-common/serviceError"
+	"github.com/Gym-Partner/api-common/status"
 	"github.com/Gym-Partner/api-common/utils"
 	"github.com/Gym-Partner/user-service/internal/domain"
 	"github.com/Gym-Partner/user-service/internal/repository"
 	"github.com/Gym-Partner/user-service/internal/service"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Controller provides HTTP handlers for user-related operations.
@@ -19,9 +20,9 @@ type Controller struct {
 
 // New creates a new instance of Controller by writing up to repository, service,
 // utility and rabbitMQ components using the given database connection.
-func New(db *database.Database, rabbit *rabbitmq.RabbitMQ) *Controller {
-	repo := repository.New(db.Handler, db.Logger)
-	svc := service.New(repo, rabbit, utils.NewUtils[domain.User]())
+func New(db *database.Database, rabbit *rabbitmq.RabbitMQ, catalog *status.StatusCatalog) *Controller {
+	repo := repository.New(db.Handler, catalog)
+	svc := service.New(repo, rabbit, catalog, utils.NewUtils[domain.User]())
 
 	return &Controller{IService: svc}
 }
@@ -33,7 +34,7 @@ func (c *Controller) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(serviceError.HttpCode201.ToInt(), user.Response())
+	ctx.JSON(http.StatusCreated, user.Response())
 }
 
 func (c *Controller) GetAll(ctx *gin.Context) {
@@ -42,7 +43,7 @@ func (c *Controller) GetAll(ctx *gin.Context) {
 		ctx.JSON(err.Code, err.Response())
 		return
 	}
-	ctx.JSON(serviceError.HttpCode200.ToInt(), users)
+	ctx.JSON(http.StatusOK, users)
 }
 
 func (c *Controller) GetOneByID(ctx *gin.Context) {
@@ -52,7 +53,7 @@ func (c *Controller) GetOneByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(serviceError.HttpCode200.ToInt(), user)
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *Controller) GetOneByEmail(ctx *gin.Context) {
@@ -62,5 +63,5 @@ func (c *Controller) GetOneByEmail(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(serviceError.HttpCode200.ToInt(), user)
+	ctx.JSON(http.StatusOK, user)
 }
