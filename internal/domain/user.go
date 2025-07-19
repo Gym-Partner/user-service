@@ -1,9 +1,10 @@
 package domain
 
 import (
-	"github.com/Gym-Partner/api-common/serviceError"
+	"github.com/Gym-Partner/api-common/errs"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"reflect"
 	"time"
 )
 
@@ -23,18 +24,20 @@ type User struct {
 type Users []User
 
 func (u *User) Response() gin.H {
+	data := gin.H{
+		"id":        u.ID,
+		"firstName": u.FirstName,
+		"lastName":  u.LastName,
+		"username":  u.Username,
+		"email":     u.Email,
+	}
+	addIfNotEmpty(data, "phone", u.Phone)
+	addIfNotEmpty(data, "followers", u.Followers)
+	addIfNotEmpty(data, "following", u.Following)
+	addIfNotEmpty(data, "image", u.Image)
+
 	return gin.H{
-		"data": gin.H{
-			"id":         u.ID,
-			"first_name": u.FirstName,
-			"last_name":  u.LastName,
-			"username":   u.Username,
-			"email":      u.Email,
-			"phone":      u.Phone,
-			"followers":  u.Followers,
-			"following":  u.Following,
-			"image":      u.Image,
-		},
+		"data": data,
 	}
 }
 
@@ -54,13 +57,46 @@ func (u *User) GenerateId() {
 	u.ID = uuid.New().String()
 }
 
-func (u *User) HashPassword(hashFunc func(string) (string, *serviceError.Error)) *serviceError.Error {
+func (u *User) HashPassword(hashFunc func(string) (string, *errs.Error)) *errs.Error {
 	hashed, err := hashFunc(u.Password)
 	if err != nil {
 		return err
 	}
 	u.Password = hashed
 	return nil
+}
+
+func addIfNotEmpty(m gin.H, key string, value any) {
+	if value == nil {
+		return
+	}
+
+	val := reflect.ValueOf(value)
+
+	switch val.Kind() {
+	case reflect.Ptr, reflect.Interface:
+		if val.IsNil() {
+			return
+		}
+		val = val.Elem()
+	default:
+	}
+
+	switch val.Kind() {
+	case reflect.String:
+		if val.Len() == 0 {
+			return
+		}
+	case reflect.Slice, reflect.Map:
+		if val.Len() == 0 {
+			return
+		}
+	case reflect.Invalid:
+		return
+	default:
+	}
+
+	m[key] = value
 }
 
 // ----------------------------- SQL -----------------------------

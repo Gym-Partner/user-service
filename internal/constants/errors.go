@@ -1,6 +1,9 @@
 package constants
 
-import "github.com/Gym-Partner/api-common/status"
+import (
+	"github.com/Gym-Partner/api-common/status"
+	"net/http"
+)
 
 // ######################################################################################
 // 											LOG
@@ -43,7 +46,7 @@ func New(catalog *status.StatusCatalog) *Constants {
 }
 
 func (c *Constants) LoadAppConstant() {
-
+	c.Catalog.Register("USER_ALREADY_EXIST", status.LevelError, "USER", "User already [%s] exist in database", http.StatusInternalServerError)
 }
 
 func (c *Constants) LoadLogConstant() {}

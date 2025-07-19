@@ -38,7 +38,7 @@ func (s *Service) Create(ctx *gin.Context) (domain.User, *errs.Error) {
 
 	exist := s.IRepository.IsExist(userPtr.Email, "email")
 	if exist {
-		return domain.User{}, errs.New(s.Catalog, "", nil)
+		return domain.User{}, errs.New(s.Catalog, "USER_ALREADY_EXIST", nil, userPtr.Email)
 	}
 
 	userPtr.GenerateId()
